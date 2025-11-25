@@ -21,4 +21,10 @@ public class Immune implements HealthState {
 
     @Override
     public String getName() { return "Odporny"; }
+
+    // Zwraca kopię tego samego stanu
+    @Override
+    public HealthState copy() {
+        return new Immune();
+    }
 }

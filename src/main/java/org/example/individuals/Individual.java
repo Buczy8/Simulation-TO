@@ -189,5 +189,18 @@ public class Individual {
             }
         }
     }
+
+    public Individual deepCopy() {
+        // Tworzymy nowego osobnika
+        Individual copy = new Individual(this.position.getX(), this.position.getY(), false);
+
+        // Ręcznie kopiujemy wartości
+        copy.velocity = new Vector2D(this.velocity.getX(), this.velocity.getY()); // Kopia wektora
+        copy.state = this.state.copy(); // Kopia stanu
+        copy.contactTimer = this.contactTimer;
+        copy.isRemoved = this.isRemoved;
+
+        return copy;
+    }
 }
 

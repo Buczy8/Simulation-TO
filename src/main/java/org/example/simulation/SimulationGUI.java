@@ -25,6 +25,19 @@ public class SimulationGUI extends JFrame {
         pack(); // Automatyczne dopasowanie rozmiaru okna
         setLocationRelativeTo(null); // Wyśrodkowanie
         setVisible(true);
+
+        this.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent e) {
+                if (e.getKeyCode() == java.awt.event.KeyEvent.VK_S) {
+                    manager.saveSimulationState();
+                }
+                if (e.getKeyCode() == java.awt.event.KeyEvent.VK_L) {
+                    manager.loadSimulationState();
+                }
+            }
+        });
+        this.setFocusable(true); // Ważne, żeby okno przechwytywało klawisze
     }
 
     // Metoda wywoływana z pętli symulacji, żeby odświeżyć ekran

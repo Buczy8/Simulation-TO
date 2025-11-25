@@ -23,4 +23,10 @@ public class HealthySusceptible implements HealthState {
     public String getName() {
         return "Zdrowy (Podatny)";
     }
+
+    // Zwraca kopię tego samego stanu
+    @Override
+    public HealthState copy() {
+        return new HealthySusceptible();
+    }
 }

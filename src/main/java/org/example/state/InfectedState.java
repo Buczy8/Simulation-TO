@@ -22,6 +22,12 @@ abstract class InfectedState implements HealthState {
         this.recoveryTime = minSteps + rand.nextInt(maxSteps - minSteps + 1);
     }
 
+    // Konstruktor z parametrami
+    public InfectedState(int currentTimer, int maxTime) {
+        this.infectionTimer = currentTimer;
+        this.recoveryTime = maxTime;
+    }
+
     @Override
     public void update(Individual context) {
         // Inkrementacja licznika w każdym kroku
@@ -43,4 +49,8 @@ abstract class InfectedState implements HealthState {
 
     @Override
     public abstract String getName();
+
+    // Zwraca kopię tego samego stanu
+    @Override
+    public abstract HealthState copy();
 }

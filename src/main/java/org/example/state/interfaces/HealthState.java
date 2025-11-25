@@ -15,4 +15,7 @@ public interface HealthState {
 
     // Metoda pomocnicza do identyfikacji stanu
     String getName();
+
+    // Kopiowanie stanu
+    HealthState copy();
 }

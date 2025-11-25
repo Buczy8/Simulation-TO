@@ -1,6 +1,8 @@
 package org.example.simulation;
 
 import org.example.individuals.Individual;
+import org.example.memento.Caretaker;
+import org.example.memento.Memento;
 import org.example.state.HealthySusceptible;
 import org.example.state.Immune;
 import org.example.state.interfaces.HealthState;
@@ -19,11 +21,12 @@ public class SimulationManager {
     private final int FPS = 25;
     private final SimulationGUI gui;
 
-    private final List<Individual> population;
+    protected List<Individual> population;
     private final Random random;
     private boolean isRunning;
-    private int simulationStep = 0;
+    private int simulationStep = 0; // Licznik kroków
     private final boolean hasImmunityEnabled; // Pole do kontrolowania odporności
+    private Caretaker caretaker = new Caretaker();
 
     public SimulationManager(double width, double height, int initialPopulation, boolean initialImmunity) {
         this.WIDTH = width;
@@ -75,24 +78,26 @@ public class SimulationManager {
 
     // Pojedyńczy krok
     private void step() {
-        simulationStep++; // zwiększamy licznik kroków
+        synchronized (this) {
+            simulationStep++; // zwiększamy licznik kroków
 
-        // Wykonanie kroku dla każdego osobnika z populacji
-        Iterator<Individual> it = population.iterator();
-        while (it.hasNext()) {
-            Individual person = it.next();
-            person.tick(WIDTH, HEIGHT);
-            if (person.isRemoved()) {
-                it.remove();
+            // Wykonanie kroku dla każdego osobnika z populacji
+            Iterator<Individual> it = population.iterator();
+            while (it.hasNext()) {
+                Individual person = it.next();
+                person.tick(WIDTH, HEIGHT);
+                if (person.isRemoved()) {
+                    it.remove();
+                }
             }
-        }
 
-        // Możliwe zakażanie
-        handleInfections();
+            // Możliwe zakażanie
+            handleInfections();
 
-        // Uzupełnianie populacji
-        while (population.size() < targetPopulation) {
-            spawnIndividualAtBoundary();
+            // Uzupełnianie populacji
+            while (population.size() < targetPopulation) {
+                spawnIndividualAtBoundary();
+            }
         }
     }
 
@@ -191,6 +196,7 @@ public class SimulationManager {
             }
         }
     }
+
     // Funkcja pomocnicza do wyświetlania statystyk
     private void printStats() {
         long healthy = population.stream().filter(i -> i.getState() instanceof HealthySusceptible).count();
@@ -205,6 +211,33 @@ public class SimulationManager {
     }
 
     public List<Individual> getPopulation() {
-        return population;
+        synchronized (this) {
+            // Zwracamy nową listę zawierającą te same elementy. Dzięki temu GUI rysuje swoją "prywatną" kopię, a symulacja może w tle zmieniać oryginał bez powodowania błędów.
+            return new ArrayList<>(population);
+        }
+    }
+
+    public void saveSimulationState() {
+        // Zatrzymujemy na chwilę wątek, żeby nie kopiować w trakcie modyfikacji
+        synchronized (this) {
+            caretaker.saveMemento(new Memento(population, simulationStep));
+        }
+    }
+
+    public void loadSimulationState() {
+        synchronized (this) {
+            // Wczytujemy stan z memento
+            Memento m = caretaker.getMemento();
+            if (m != null) {
+                // Przywracamy listę (deep copy z memento)
+                this.population = new ArrayList<>();
+                for (Individual ind : m.getState()) {
+                    this.population.add(ind.deepCopy()); // Kopiujemy znowu, żeby memento było wielokrotnego użytku
+                }
+                this.simulationStep = m.getStep();
+                // odświeżenie GUI
+                SwingUtilities.invokeLater(gui::refresh);
+            }
+        }
     }
 }
