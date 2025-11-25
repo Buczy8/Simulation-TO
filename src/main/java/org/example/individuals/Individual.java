@@ -11,57 +11,56 @@ import java.util.Random;
 
 public class Individual {
 
-    // Twoja klasa wektora z Lab 2
+    // klasa wektora z Lab 2
     private Vector2D position;
     private Vector2D velocity;
 
-    // Aktualny stan zdrowia (Wzorzec State)
+    // Aktualny stan zdrowia
     private HealthState state;
 
     private boolean isRemoved = false;
 
-    // Licznik kontaktu (potrzebny do warunku 3 sekund bliskiego kontaktu)
+    // Licznik kontaktu
     private int contactTimer = 0;
 
     public Individual(double x, double y, boolean isImmune) {
         this.position = new Vector2D(x, y);
-        // Losowa prędkość i kierunek, max 2.5 [cite: 4]
+        // Losowa prędkość i kierunek, max 2.5 m/s
         this.velocity = Vector2D.randomVelocity(2.5);
 
-        // Domyślny stan (można zmienić w konstruktorze zależnie od parametrów symulacji)
+        // Domyślny stan
         if (isImmune) {
             // Jeśli true -> ustawiamy stan na Odporny
-            // Taki osobnik nigdy nie wywoła metody tryInfect() skutecznie
             this.state = new Immune();
         } else {
-            // Jeśli false -> ustawiamy stan na Zdrowy (Podatny) [cite: 13]
+            // Jeśli false -> ustawiamy stan na Zdrowy
             this.state = new HealthySusceptible();
         }
     }
 
     // Metoda wywoływana 25 razy na sekundę
     public void tick(double width, double height) {
-        // 0. Losowa zmiana prędkości przed ruchem
+        // Losowa zmiana prędkości przed ruchem
         updateVelocity();
 
-        // 1. Ruch (z nową, ewentualnie zmienioną prędkością)
+        //  Ruch z nową prędkością
         position = position.add(velocity);
 
-        // 2. Aktualizacja logiki stanu
+        // Nowy stan
         state.update(this);
 
-        // 3. Logika granic
+        // Sprawdzenie, czy osobnik nie wyszedł poza obszar
         checkBoundaries(width, height);
     }
 
-    // Nowa metoda prywatna do losowania zmian prędkości
+    // losowanie zmian prędkości
     private void updateVelocity() {
         Random rand = new Random();
 
-        // Siła losowych zmian (im mniejsza liczba, tym płynniejszy ruch)
+        // Siła losowych zmian
         double changeFactor = 0.2;
 
-        // Tworzymy mały losowy wektor zmiany (-0.1 do 0.1 przy changeFactor=0.2)
+        // Tworzymy losowy wektor zmiany
         double dx = (rand.nextDouble() - 0.5) * changeFactor;
         double dy = (rand.nextDouble() - 0.5) * changeFactor;
         Vector2D perturbation = new Vector2D(dx, dy);
@@ -69,7 +68,7 @@ public class Individual {
         // Dodajemy zmianę do aktualnej prędkości
         Vector2D newVelocity = velocity.add(perturbation);
 
-        // Sprawdzamy, czy nie przekroczono limitu 2.5 m/s [cite: 4, 5]
+        // Sprawdzamy, czy nie przekroczono limitu 2.5 m/s
         double speed = newVelocity.abs();
         double maxSpeed = 2.5;
 
@@ -78,19 +77,20 @@ public class Individual {
             double scale = maxSpeed / speed;
             double[] comps = newVelocity.getComponents();
 
-            // Ręczne mnożenie przez skalar (chyba że masz metodę .multiply() w Vector2D)
+            // Mnożenie przez skalar
             newVelocity = new Vector2D(comps[0] * scale, comps[1] * scale);
         }
-
+        // Przypisanie nowej prędkości
         this.velocity = newVelocity;
     }
 
-    // Zmiana stanu (kluczowe dla wzorca State)
+    // Zmiana stanu
     public void setState(HealthState newState) {
         this.state = newState;
         System.out.println("Zmiana stanu na: " + newState.getName());
     }
 
+    // Inkrementacja licznika kontaktu
     public void incrementContactTime() {
         this.contactTimer++;
     }
@@ -100,7 +100,7 @@ public class Individual {
         this.contactTimer = 0;
     }
 
-    // Sprawdzamy, czy minęły 3 sekundy (3s * 25 kroków = 75)
+    // Sprawdzamy, czy minęły 3 sekundy (75 kroków)
     public boolean hasContactLastedLongEnough() {
         return this.contactTimer >= (3 * 25); // 75 kroków
     }
@@ -111,7 +111,7 @@ public class Individual {
         if (!(state instanceof HealthySusceptible)) return;
 
         Random rand = new Random();
-        // Losujemy rodzaj zakażenia (alternatywa wykluczająca)
+        // Losujemy rodzaj zakażenia
         if (rand.nextBoolean()) {
             setState(new InfectedSymptomatic());
         } else {
@@ -119,19 +119,22 @@ public class Individual {
         }
     }
 
-    // Gettery, Settery i logika granic...
+    // Zwraca pozycje osobnika
     public Vector2D getPosition() {
         return position;
     }
 
+    // Zwraca stan zdrowia osobnika
     public HealthState getState() {
         return state;
     }
 
+    // Zwraca, czy osobnik został usunięty
     public boolean isRemoved() {
         return isRemoved;
     }
 
+    // Sprawdzenie, czy osobnik wyszedł poza obszar
     public void checkBoundaries(double width, double height) {
         // Pobieramy aktualne współrzędne
         double[] pos = position.getComponents();
@@ -146,12 +149,12 @@ public class Individual {
         boolean hitX = false;
         boolean hitY = false;
 
-        // Sprawdzenie czy wyszedł poza X (lewo lub prawo)
+        // Sprawdzenie czy wyszedł poza X
         if (x <= 0 || x >= width) {
             hitX = true;
         }
 
-        // Sprawdzenie czy wyszedł poza Y (góra lub dół)
+        // Sprawdzenie czy wyszedł poza Y
         if (y <= 0 || y >= height) {
             hitY = true;
         }
@@ -160,21 +163,19 @@ public class Individual {
         if (hitX || hitY) {
             Random rand = new Random();
 
-            // Prawdopodobieństwo 50% na opuszczenie obszaru [cite: 7]
+            // Prawdopodobieństwo 50% na opuszczenie obszaru
             if (rand.nextBoolean()) {
                 this.isRemoved = true; // Oznaczamy do usunięcia
             } else {
-                // Prawdopodobieństwo 50% na zawrócenie (odbicie) [cite: 7]
-
-                // Jeśli uderzył w ścianę pionową (X), odwracamy składową VX
+                // Jeśli uderzył w ścianę pionową, odwracamy składową VX
                 if (hitX) {
                     vx = -vx;
-                    // Korekta pozycji, żeby nie "utknął" w ścianie
+                    // Korekta pozycji, żeby nie utknął w ścianie
                     if (x <= 0) x = 0.1;
                     if (x >= width) x = width - 0.1;
                 }
 
-                // Jeśli uderzył w ścianę poziomą (Y), odwracamy składową VY
+                // Jeśli uderzył w ścianę poziomą, odwracamy składową VY
                 if (hitY) {
                     vy = -vy;
                     // Korekta pozycji
@@ -182,7 +183,7 @@ public class Individual {
                     if (y >= height) y = height - 0.1;
                 }
 
-                // Aktualizujemy wektory (tworzymy nowe, bo Vector2D jest niemutowalny/immutable w dobrym stylu)
+                // Aktualizujemy wektor
                 this.velocity = new Vector2D(vx, vy);
                 this.position = new Vector2D(x, y);
             }

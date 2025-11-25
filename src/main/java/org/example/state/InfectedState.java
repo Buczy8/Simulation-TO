@@ -5,11 +5,11 @@ import org.example.state.interfaces.HealthState;
 
 import java.util.Random;
 
-
+// klasa abstrakcyjna pozwalająca na współdzielenie zachowań między klasami stanów zarażonych
 abstract class InfectedState implements HealthState {
     protected int infectionTimer = 0; // Licznik kroków
     protected final int recoveryTime; // Cel (kiedy wyzdrowieje)
-    private static final int STEPS_PER_SECOND = 25; //
+    private static final int STEPS_PER_SECOND = 25; // liczba kroków na sekundę
 
     public InfectedState() {
         Random rand = new Random();
@@ -18,7 +18,7 @@ abstract class InfectedState implements HealthState {
         int minSteps = 20 * STEPS_PER_SECOND; // 500
         int maxSteps = 30 * STEPS_PER_SECOND; // 750
 
-        // Losujemy liczbę kroków z przedziału [500, 750]
+        // Losujemy liczbę kroków do czasu wyzdrowienia
         this.recoveryTime = minSteps + rand.nextInt(maxSteps - minSteps + 1);
     }
 

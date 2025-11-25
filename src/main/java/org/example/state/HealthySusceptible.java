@@ -7,18 +7,18 @@ import java.util.Random;
 public class HealthySusceptible implements HealthState {
     @Override
     public void update(Individual context) {
-        // Zdrowy nic nie robi z czasem, po prostu sobie żyje
+        // Zdrowy nic nie robi po prostu sobie żyje
     }
 
     @Override
     public boolean isInfectious() {
-        return false; // Zdrowy nie zaraża [cite: 13]
+        return false; // Zdrowy nie zaraża
     }
 
     @Override
     public double getInfectionProbability() {
         return 0.0;
-    }
+    } // zdrowy nie zaraża
 
     @Override
     public String getName() {

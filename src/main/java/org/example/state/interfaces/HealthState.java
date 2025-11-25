@@ -4,17 +4,17 @@ import org.example.individuals.Individual;
 
 import java.util.Random;
 
-// Interfejs Stanu
+
 public interface HealthState {
-    // Wywoływane w każdym kroku symulacji (np. do odliczania czasu choroby)
+    // Wywoływane w każdym kroku symulacji
     void update(Individual context);
 
-    // Czy ten osobnik może zarażać innych?
+    // Czy osobnik może zarażać innych
     boolean isInfectious();
 
-    // Prawdopodobieństwo zarażenia kogoś (0.5 dla bezobjawowych, 1.0 dla objawowych)
+    // Prawdopodobieństwo zarażenia kogoś
     double getInfectionProbability();
 
-    // Metoda pomocnicza do identyfikacji stanu (opcjonalna, dla wizualizacji)
+    // Metoda pomocnicza do identyfikacji stanu
     String getName();
 }
