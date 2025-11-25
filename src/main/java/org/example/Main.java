@@ -6,7 +6,7 @@ public class Main {
     public static void main(String[] args) {
 
         // Aby wyłączyć odporność zmienić na false
-        SimulationManager sim = new SimulationManager(50, 50, 100, true);
+        SimulationManager sim = new SimulationManager(100, 100, 2000, true);
         sim.start();
     }
 }

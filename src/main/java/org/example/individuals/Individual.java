@@ -25,7 +25,7 @@ public class Individual {
 
     public Individual(double x, double y, boolean isImmune) {
         this.position = new Vector2D(x, y);
-        // Losowa prędkość i kierunek, max 2.5 m/s
+        // Losowa prędkość i kierunek, max. 2.5 m/s
         this.velocity = Vector2D.randomVelocity(2.5);
 
         // Domyślny stan
@@ -58,7 +58,7 @@ public class Individual {
         Random rand = new Random();
 
         // Siła losowych zmian
-        double changeFactor = 0.2;
+        double changeFactor = 0.1;
 
         // Tworzymy losowy wektor zmiany
         double dx = (rand.nextDouble() - 0.5) * changeFactor;
@@ -149,12 +149,12 @@ public class Individual {
         boolean hitX = false;
         boolean hitY = false;
 
-        // Sprawdzenie czy wyszedł poza X
+        // Sprawdzenie, czy wyszedł poza X
         if (x <= 0 || x >= width) {
             hitX = true;
         }
 
-        // Sprawdzenie czy wyszedł poza Y
+        // Sprawdzenie, czy wyszedł poza Y
         if (y <= 0 || y >= height) {
             hitY = true;
         }

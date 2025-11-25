@@ -2,8 +2,6 @@ package org.example.state.interfaces;
 
 import org.example.individuals.Individual;
 
-import java.util.Random;
-
 
 public interface HealthState {
     // Wywoływane w każdym kroku symulacji

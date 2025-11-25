@@ -13,14 +13,10 @@ import java.awt.*;
 import java.util.List;
 
 public class SimulationPanel extends JPanel {
-    private final double simWidth;
-    private final double simHeight;
     private final int scale;
     private final SimulationManager manager;
 
-    public SimulationPanel(double simWidth, double simHeight, int scale, SimulationManager manager) {
-        this.simWidth = simWidth;
-        this.simHeight = simHeight;
+    public SimulationPanel(int scale, SimulationManager manager) {
         this.scale = scale;
         this.manager = manager;
         this.setBackground(Color.DARK_GRAY); // Tło planszy
@@ -59,16 +55,12 @@ public class SimulationPanel extends JPanel {
 
         // Dobór koloru na podstawie stanu
         HealthState state = ind.getState();
-        if (state instanceof HealthySusceptible) {
-            g.setColor(Color.GREEN);
-        } else if (state instanceof InfectedSymptomatic) {
-            g.setColor(Color.RED);
-        } else if (state instanceof InfectedAsymptomatic) {
-            g.setColor(Color.ORANGE);
-        } else if (state instanceof Immune) {
-            g.setColor(Color.BLUE);
-        } else {
-            g.setColor(Color.WHITE);
+        switch (state) {
+            case HealthySusceptible healthySusceptible -> g.setColor(Color.GREEN);
+            case InfectedSymptomatic infectedSymptomatic -> g.setColor(Color.RED);
+            case InfectedAsymptomatic infectedAsymptomatic -> g.setColor(Color.ORANGE);
+            case Immune immune -> g.setColor(Color.BLUE);
+            case null, default -> g.setColor(Color.WHITE);
         }
 
         // Rysowanie kropki

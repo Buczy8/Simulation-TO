@@ -17,10 +17,10 @@ public class SimulationManager {
     private final double HEIGHT;
     private final int targetPopulation; // Liczba populacji
     private final int FPS = 25;
-    private SimulationGUI gui;
+    private final SimulationGUI gui;
 
-    private List<Individual> population;
-    private Random random;
+    private final List<Individual> population;
+    private final Random random;
     private boolean isRunning;
     private int simulationStep = 0;
     private final boolean hasImmunityEnabled; // Pole do kontrolowania odporności
@@ -53,7 +53,7 @@ public class SimulationManager {
                 step(); // krok
 
                 // odświeżamy wizualizację rozprzestrzeniania się choroby
-                SwingUtilities.invokeLater(() -> gui.refresh());
+                SwingUtilities.invokeLater(gui::refresh);
 
                 // Co 25 (1 sekunda) wyświetlamy stan populacji
                 if (simulationStep % 25 == 0) {
@@ -101,13 +101,26 @@ public class SimulationManager {
         double x = 0, y = 0;
         int side = random.nextInt(4); //losujemy ścianę
 
-        // Przesunięcie o 0.1, żeby nie zostali usunięci w tej samej klatce przez checkBoundaries
-        switch (side) {
-            case 0: x = random.nextDouble() * WIDTH; y = 0.1; break;
-            case 1: x = WIDTH - 0.1; y = random.nextDouble() * HEIGHT; break;
-            case 2: x = random.nextDouble() * WIDTH; y = HEIGHT - 0.1; break;
-            case 3: x = 0.1; y = random.nextDouble() * HEIGHT; break;
-        }
+        // Przesunięcie o 0,1, żeby nie zostali usunięci w tej samej klatce przez checkboundaries
+        y = switch (side) {
+            case 0 -> {
+                x = random.nextDouble() * WIDTH;
+                yield 0.1;
+            }
+            case 1 -> {
+                x = WIDTH - 0.1;
+                yield random.nextDouble() * HEIGHT;
+            }
+            case 2 -> {
+                x = random.nextDouble() * WIDTH;
+                yield HEIGHT - 0.1;
+            }
+            case 3 -> {
+                x = 0.1;
+                yield random.nextDouble() * HEIGHT;
+            }
+            default -> y;
+        };
 
         //  Odporność zależy od ustawienia w konstruktorze, jeżeli odporność jest włączona osobnik ma 10% szans na odporność
         boolean isImmune = hasImmunityEnabled && random.nextDouble() < 0.1;

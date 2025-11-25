@@ -2,7 +2,6 @@ package org.example.state;
 
 import org.example.individuals.Individual;
 import org.example.state.interfaces.HealthState;
-import java.util.Random;
 
 public class HealthySusceptible implements HealthState {
     @Override
