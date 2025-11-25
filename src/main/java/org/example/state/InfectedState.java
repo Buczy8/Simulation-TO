@@ -50,6 +50,11 @@ abstract class InfectedState implements HealthState {
     @Override
     public abstract String getName();
 
+    @Override
+    public boolean isSusceptible() {
+        return false;
+    }
+
     // Zwraca kopię tego samego stanu
     @Override
     public abstract HealthState copy();

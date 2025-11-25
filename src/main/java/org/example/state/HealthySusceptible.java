@@ -24,6 +24,11 @@ public class HealthySusceptible implements HealthState {
         return "Zdrowy (Podatny)";
     }
 
+    @Override
+    public boolean isSusceptible() {
+        return true;
+    }
+
     // Zwraca kopię tego samego stanu
     @Override
     public HealthState copy() {

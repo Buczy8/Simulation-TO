@@ -19,7 +19,7 @@ public class SimulationPanel extends JPanel {
     public SimulationPanel(int scale, SimulationManager manager) {
         this.scale = scale;
         this.manager = manager;
-        this.setBackground(Color.DARK_GRAY); // Tło planszy
+        this.setBackground(Color.DARK_GRAY);
     }
 
     @Override
@@ -27,40 +27,42 @@ public class SimulationPanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
 
-        // Wygładzanie krawędzi
+        // wygładzanie krawędzi kółek
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Pobieramy listę osobników z managera symulacji
-        List<Individual> population = manager.getPopulation();
+        // Pobieramy kopię listy z managera
+        List<Individual> population = manager.getPopulationForGUI();
 
-        // Wyświetlenie wszystkich osobników na planszy
-        for (int i = 0; i < population.size(); i++) {
-            try {
-                Individual ind = population.get(i);
-                drawIndividual(g2d, ind);
-            } catch (IndexOutOfBoundsException e) {
-                System.err.println("Index out of bounds: " + i);
-            }
+        if (population == null) return;
+
+        // Rysowanie osobników
+        for (Individual ind : population) {
+            drawIndividual(g2d, ind);
         }
+
+        // Rysowanie instrukcji w rogu do zapisania i wczytania stanu
+        g2d.setColor(Color.WHITE);
+        g2d.drawString("S - Zapisz | L - Wczytaj", 10, 20);
     }
 
+    // Rysowanie osobnika
     private void drawIndividual(Graphics2D g, Individual ind) {
         Vector2D pos = ind.getPosition();
-        double[] coords = pos.getComponents();
 
-        // Metry -> Piksele
-        int x = (int) (coords[0] * scale);
-        int y = (int) (coords[1] * scale);
-        int size = 8; // Wielkość kropki w pikselach
+        // Konwersja metrów na piksele
+        int x = (int) (pos.getComponents()[0] * scale);
+        int y = (int) (pos.getComponents()[1] * scale);
+        int size = 8; // Rozmiar kropki
 
-        // Dobór koloru na podstawie stanu
+
         HealthState state = ind.getState();
+
         switch (state) {
-            case HealthySusceptible healthySusceptible -> g.setColor(Color.GREEN);
-            case InfectedSymptomatic infectedSymptomatic -> g.setColor(Color.RED);
-            case InfectedAsymptomatic infectedAsymptomatic -> g.setColor(Color.ORANGE);
-            case Immune immune -> g.setColor(Color.BLUE);
-            case null, default -> g.setColor(Color.WHITE);
+            case HealthySusceptible healthySusceptible -> g.setColor(Color.GREEN); // Zdrowy
+            case InfectedSymptomatic infectedSymptomatic -> g.setColor(Color.RED); // Chory objawowy
+            case InfectedAsymptomatic infectedAsymptomatic -> g.setColor(Color.YELLOW); // Chory bezobjawowy
+            case Immune immune -> g.setColor(Color.BLUE); // Odporny
+            case null, default -> g.setColor(Color.WHITE); // Błąd/Inny
         }
 
         // Rysowanie kropki

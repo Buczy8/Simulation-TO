@@ -13,6 +13,8 @@ public interface HealthState {
     // Prawdopodobieństwo zarażenia kogoś
     double getInfectionProbability();
 
+    boolean isSusceptible();
+
     // Metoda pomocnicza do identyfikacji stanu
     String getName();
 
